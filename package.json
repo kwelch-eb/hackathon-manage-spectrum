@@ -7,8 +7,8 @@
     "eventbrite_design_system": "http://packages.evbops.com:8889/package/eventbrite_design_system/66.13.0",
     "lodash": "^4.17.11",
     "query-string": "^6.2.0",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1"
   },
@@ -18,7 +18,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "yarn build",
-    "deploy": "now ./build/ --public"
+    "deploy": "now ./build/ --public --static"
   },
   "eslintConfig": {
     "extends": "react-app"
