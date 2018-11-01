@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { RegisterPage, HomePage } from './pages';
+import(/* webpackPreload: true */'eventbrite_design_system/css/eds.css');
 
 export default class App extends Component {
   render() {

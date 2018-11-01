@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
 import {sortBy} from 'lodash';
-import 'eventbrite_design_system/css/eds.css';
 import DataTable from 'eventbrite_design_system/dataTable/DataTable';
 import Button from 'eventbrite_design_system/button/Button';
 
