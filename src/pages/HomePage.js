@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
-import _ from 'lodash';
+import {sortBy} from 'lodash';
 import 'eventbrite_design_system/css/eds.css';
 import DataTable from 'eventbrite_design_system/dataTable/DataTable';
 import Button from 'eventbrite_design_system/button/Button';
@@ -79,7 +79,7 @@ export default class SomeOtherPage extends Component {
       }
     });
 
-    return _.sortBy(Object.keys(attendees).map((key) => {
+    return sortBy(Object.keys(attendees).map((key) => {
       return {
         name: key,
         visits: attendees[key]

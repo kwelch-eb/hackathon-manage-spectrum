@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-var request = require('request');
-var querystring = require('querystring');
+import request from 'request';
+import querystring from 'querystring';
 
 const OAUTH_URL = 'https://www.eventbrite.com/oauth/token';
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
