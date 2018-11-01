@@ -3,8 +3,7 @@ import queryString from 'query-string';
 import {sortBy} from 'lodash';
 import DataTable from 'eventbrite_design_system/dataTable/DataTable';
 import Button from 'eventbrite_design_system/button/Button';
-
-const CLIENT_ID = process.env.CLIENT_ID;
+import {CLIENT_ID, BASE_URL} from '../constants';
 
 export default class SomeOtherPage extends Component {
   constructor(props) {
@@ -23,7 +22,7 @@ export default class SomeOtherPage extends Component {
   }
 
   handleClick = () => {
-    window.location.href = 'https://www.eventbrite.com/oauth/authorize?response_type=token&client_id='+CLIENT_ID;
+    window.location.href = `${BASE_URL}/oauth/authorize?response_type=token&client_id=${CLIENT_ID}`;
   }
 
   componentDidMount() {
@@ -48,7 +47,7 @@ export default class SomeOtherPage extends Component {
   }
 
   fetchEventAttendees(event_id, key) {
-    return fetch(`https://www.eventbriteapi.com/v3/events/${event_id}/attendees/?token=${this.state.access_token}`)
+    return fetch(`${BASE_URL}/api/v3/events/${event_id}/attendees/?token=${this.state.access_token}`)
       .then((response) => (response.json()))
       .then((s) => {
         let {
