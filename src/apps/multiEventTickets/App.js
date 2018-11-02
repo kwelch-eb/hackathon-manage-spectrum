@@ -8,20 +8,8 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import ConnectedLandingPage from './containers/ConnectedLandingPage';
-// import ConnectedAssociationPage from './containers/ConnectedAssociationPage';
+import ConnectedAssociationPage from './containers/ConnectedAssociationPage';
 import reducer from './reducers';
-
-/// ROUTES
-/*<Route
-          path="/"
-          component={ConnectedLandingPage}
-          eventGroupId={eventGroupId}
-        />
-        <Route
-          path=":masterTicketId"
-          component={ConnectedAssociationPage}
-          eventGroupId={eventGroupId}
-        />*/
 
 export default class ManageMultiEventTicketsApp extends React.Component {
   static propTypes = {
@@ -38,30 +26,28 @@ export default class ManageMultiEventTicketsApp extends React.Component {
       {},
       composeWithDevTools(applyMiddleware(thunk))
     );
+    this.state = {
+      masterTicketId: null,
+    };
   }
 
+  setMasterTicketId = masterTicketId => this.setState({ masterTicketId });
+
   render() {
-    console.log(this.props);
+    const { masterTicketId } = this.state;
+    const Component = masterTicketId
+      ? ConnectedAssociationPage
+      : ConnectedLandingPage;
+
     return (
       <Provider store={this._store}>
         <Route
-          path={`${this.props.match.path}`}
-          exact
           component={props => (
-            <ConnectedLandingPage
+            <Component
               {...props}
               {...this.props}
-            />
-          )}
-        />
-
-        <Route
-          path={`${this.props.match.path}/:masterTicketId`}
-          exact
-          component={props => (
-            <ConnectedLandingPage
-              {...props}
-              {...this.props}
+              masterTicketId={masterTicketId}
+              setMasterTicketId={this.setMasterTicketId}
             />
           )}
         />

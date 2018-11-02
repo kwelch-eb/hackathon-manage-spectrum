@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 
-import {getFormattedDateTime} from '../../common/utils/datetime';
+import {getFormattedDateTime} from 'js-utils/datetime';
 import {EVENT_PROP_TYPE} from '../constants';
 
 export default class EventGroupTitle extends PureComponent {

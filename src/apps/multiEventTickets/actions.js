@@ -1,4 +1,4 @@
-// import { push } from 'react-router-redux';
+import { push } from 'react-router-redux';
 
 import { BASE_URL } from './constants';
 import {
@@ -7,8 +7,6 @@ import {
   postTicketAssociations,
 } from './api';
 import { setWindowLocation } from 'js-utils/http';
-
-const push = path => console.log('this should have moved to this url', path);
 
 export const LOAD_TICKETS_ASSOCIATIONS =
   'multi-event-tickets/load-tickets-associations';

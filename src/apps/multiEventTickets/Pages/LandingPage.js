@@ -34,7 +34,6 @@ export default class LandingPage extends PureComponent {
     ),
     initializeApp: PropTypes.func.isRequired,
     redirectToTicketCreation: PropTypes.func.isRequired,
-    openMasterTicketEdit: PropTypes.func.isRequired,
     eventId: PropTypes.number.isRequired,
     eventGroupId: PropTypes.string.isRequired,
   };
@@ -58,19 +57,14 @@ export default class LandingPage extends PureComponent {
   };
 
   _handleTableItemAction = (action, masterTicketId) => {
-    let {
-      eventId,
-      openMasterTicketEdit,
-    } = this.props;
-
     if (action === 'click') {
-      openMasterTicketEdit(eventId, masterTicketId);
+      this.props.setMasterTicketId(masterTicketId);
       return;
     }
   };
 
   render() {
-    const { tickets } = this.props;
+    const { tickets, match } = this.props;
     const { isLoading } = this.state;
     let displayComponent = (
       <EmptyState

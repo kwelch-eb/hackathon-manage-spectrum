@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import {Redirect} from 'react-router-dom';
 import queryString from 'query-string';
-import {sortBy} from 'lodash';
+import { sortBy } from 'lodash';
 import DataTable from 'eventbrite_design_system/dataTable/DataTable';
 import Button from 'eventbrite_design_system/button/Button';
-import {CLIENT_ID, BASE_URL} from '../constants';
+import { CLIENT_ID, BASE_URL } from '../constants';
 
 export default class SomeOtherPage extends Component {
   constructor(props) {
@@ -23,36 +24,39 @@ export default class SomeOtherPage extends Component {
 
   handleClick = () => {
     window.location.href = `${BASE_URL}/oauth/authorize?response_type=token&client_id=${CLIENT_ID}`;
-  }
+  };
 
   componentDidMount() {
     const parsedHash = queryString.parse(window.location.hash);
     this.setState({
-      ...parsedHash
+      ...parsedHash,
     });
 
     if (parsedHash.access_token) {
       setTimeout(() => {
-        Promise.all(this.state.events.map((event, key) => {
-          return this.fetchEventAttendees(event.id, key);
-        }))
-          .then(() => {
-            this.props.eb.FrameAPI.init();
-            this.setState({
-              all: true
-            });
+        Promise.all(
+          this.state.events.map((event, key) => {
+            return this.fetchEventAttendees(event.id, key);
+          })
+        ).then(() => {
+          this.props.eb.FrameAPI.init();
+          this.setState({
+            all: true,
           });
+        });
       }, 0);
     }
   }
 
   fetchEventAttendees(event_id, key) {
-    return fetch(`${BASE_URL}/api/v3/events/${event_id}/attendees/?token=${this.state.access_token}`)
-      .then((response) => (response.json()))
-      .then((s) => {
-        let {
-          events
-        } = this.state;
+    return fetch(
+      `${BASE_URL}/api/v3/events/${event_id}/attendees/?token=${
+        this.state.access_token
+      }`
+    )
+      .then(response => response.json())
+      .then(s => {
+        let { events } = this.state;
         events[key].attendees = s.attendees;
 
         this.setState({
@@ -65,9 +69,9 @@ export default class SomeOtherPage extends Component {
     let { events } = this.state;
     let attendees = {};
 
-    events.forEach((event) => {
+    events.forEach(event => {
       if (event.attendees) {
-        event.attendees.forEach((att) => {
+        event.attendees.forEach(att => {
           if (!attendees[att.profile.email]) {
             attendees[att.profile.email] = 1;
           } else {
@@ -77,12 +81,15 @@ export default class SomeOtherPage extends Component {
       }
     });
 
-    return sortBy(Object.keys(attendees).map((key) => {
-      return {
-        name: key,
-        visits: attendees[key]
-      };
-    }), (obj) => obj.visits * -1);
+    return sortBy(
+      Object.keys(attendees).map(key => {
+        return {
+          name: key,
+          visits: attendees[key],
+        };
+      }),
+      obj => obj.visits * -1
+    );
   }
 
   renderDataTable(attendees) {
@@ -105,27 +112,29 @@ export default class SomeOtherPage extends Component {
             fieldLabel: 'Visits',
             isEditable: false,
             isSortable: true,
-          }
+          },
         ]}
       />
     );
   }
 
   render() {
-    let {
-      access_token
-    } = this.state;
+    let { access_token } = this.state;
 
-    let button = (!access_token) ? (
-        <div>
-          <Button style="fill" onClick={this.handleClick}>
-            Authenticate
-          </Button>
-        </div>
-      ): null;
+    let button = !access_token ? (
+      <div>
+        <Button style="fill" onClick={this.handleClick}>
+          Authenticate
+        </Button>
+      </div>
+    ) : null;
 
     let attendees = this.getAllAttendees();
-    let table = this.renderDataTable(attendees)
+    let table = this.renderDataTable(attendees);
+
+    if (this.props.userId) {
+      return <Redirect to="met" />;
+    }
 
     return (
       <div className="eds-g-grid">

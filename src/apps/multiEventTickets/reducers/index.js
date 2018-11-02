@@ -1,4 +1,4 @@
-// import {routerReducer} from 'react-router-redux';
+import {routerReducer} from 'react-router-redux';
 import {combineReducers} from 'redux';
 
 import entitiesReducerFactory from './entitiesReducerFactory';
@@ -13,5 +13,5 @@ export default combineReducers({
         ticketAssociations: noopReducer,
         events: noopReducer,
     }),
-    // routing: routerReducer,
+    routing: routerReducer,
 });

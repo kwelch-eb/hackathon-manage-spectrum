@@ -1,163 +1,159 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
+import {Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Divider from 'eventbrite_design_system/divider/Divider';
 
-import ConfirmNavigationDialog from '../../common/components/confirm-navigation-dialog/ConfirmNavigationDialog';
+// import ConfirmNavigationDialog from '../../common/components/confirm-navigation-dialog/ConfirmNavigationDialog';
 import TicketAssociationFilters from '../components/TicketAssociationFilters';
 import EventSelectionTicketGroup from '../components/EventSelectionTicketGroup';
 import NavigationActionBar from '../components/NavigationActionBar';
 
 import {
-    TICKET_PROP_TYPE,
-    ASSOCIATION_STATUSES_PROP_TYPE,
-    FILTERS_PROP_TYPE,
-    ASSOCIATION_STATUS
+  TICKET_PROP_TYPE,
+  ASSOCIATION_STATUSES_PROP_TYPE,
+  FILTERS_PROP_TYPE,
+  ASSOCIATION_STATUS,
 } from '../constants';
 
 const _isValueChanged = (oldValue, newValue) => {
-    let valueHasChanged = oldValue && oldValue !== newValue;
-    let valueIsNewAndActive = !oldValue && newValue === ASSOCIATION_STATUS.ACTIVE;
+  let valueHasChanged = oldValue && oldValue !== newValue;
+  let valueIsNewAndActive = !oldValue && newValue === ASSOCIATION_STATUS.ACTIVE;
 
-    return valueHasChanged || valueIsNewAndActive;
+  return valueHasChanged || valueIsNewAndActive;
 };
 
-export const calculateChangesToSave = (oldState = {}, newState = {}) => (
-    Object.keys(newState).reduce((acc, childTicketId) => {
-        let oldValue = oldState[childTicketId];
-        let newValue = newState[childTicketId];
+export const calculateChangesToSave = (oldState = {}, newState = {}) =>
+  Object.keys(newState).reduce((acc, childTicketId) => {
+    let oldValue = oldState[childTicketId];
+    let newValue = newState[childTicketId];
 
-        if (_isValueChanged(oldValue, newValue)) {
-            return {
-                ...acc,
-                [childTicketId]: newValue,
-            };
-        }
+    if (_isValueChanged(oldValue, newValue)) {
+      return {
+        ...acc,
+        [childTicketId]: newValue,
+      };
+    }
 
-        return acc;
-    }, {})
-);
+    return acc;
+  }, {});
 
-export const getIsDirty = (oldState = {}, newState = {}) => (
-    Object.keys(newState).some((childTicketId) => {
-        let oldValue = oldState[childTicketId];
-        let newValue = newState[childTicketId];
+export const getIsDirty = (oldState = {}, newState = {}) =>
+  Object.keys(newState).some(childTicketId => {
+    let oldValue = oldState[childTicketId];
+    let newValue = newState[childTicketId];
 
-        return _isValueChanged(oldValue, newValue);
-    })
-);
+    return _isValueChanged(oldValue, newValue);
+  });
 
 export default class AssociationPage extends PureComponent {
-    static propTypes = {
-        filteredEvents: PropTypes.arrayOf(PropTypes.object),
-        initialAssociationStatuses: ASSOCIATION_STATUSES_PROP_TYPE,
-        filters: FILTERS_PROP_TYPE,
-        masterTicket: TICKET_PROP_TYPE,
-        initializeApp: PropTypes.func.isRequired,
-        updateFilters: PropTypes.func.isRequired,
-        updateTicketAssociations: PropTypes.func.isRequired,
-        navigateToLandingPage: PropTypes.func.isRequired,
+  static propTypes = {
+    filteredEvents: PropTypes.arrayOf(PropTypes.object),
+    initialAssociationStatuses: ASSOCIATION_STATUSES_PROP_TYPE,
+    filters: FILTERS_PROP_TYPE,
+    masterTicket: TICKET_PROP_TYPE,
+    initializeApp: PropTypes.func.isRequired,
+    updateFilters: PropTypes.func.isRequired,
+    updateTicketAssociations: PropTypes.func.isRequired,
+    navigateToLandingPage: PropTypes.func.isRequired,
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      associationStatuses: props.initialAssociationStatuses || undefined,
     };
+  }
 
-    constructor(props) {
-        super(props);
+  componentDidMount() {
+    let {
+      sdk,
+      initializeApp,
+      masterTicket,
+      eventId,
+      eventGroupId,
+    } = this.props;
 
-        this.state = {
-            associationStatuses: props.initialAssociationStatuses || undefined,
-        };
+    if (!masterTicket) {
+      initializeApp(sdk, eventId, eventGroupId);
     }
+  }
 
-    componentDidMount() {
-        let {
-            initializeApp,
-            masterTicket,
-            params: {eventId},
-            route: {eventGroupId},
-        } = this.props;
+  componentWillReceiveProps(nextProps) {
+    this.setState(prevState => ({
+      associationStatuses:
+        prevState.associationStatuses || nextProps.initialAssociationStatuses,
+    }));
+  }
 
-        if (!masterTicket) {
-            initializeApp(eventId, eventGroupId);
-        }
-    }
+  _handleUpdateStatuses = updatedStatuses => {
+    this.setState(prevState => ({
+      associationStatuses: {
+        ...prevState.associationStatuses,
+        ...updatedStatuses,
+      },
+    }));
+  };
 
-    componentWillReceiveProps(nextProps) {
-        this.setState((prevState) => ({
-            associationStatuses: prevState.associationStatuses || nextProps.initialAssociationStatuses,
-        }));
-    }
+  _handleSave = () => {
+    let {
+      sdk,
+      eventId,
+      masterTicketId,
+      initialAssociationStatuses,
+      updateTicketAssociations,
+    } = this.props;
+    let updatedStatuses = calculateChangesToSave(
+      initialAssociationStatuses,
+      this.state.associationStatuses
+    );
 
-    _handleUpdateStatuses = (updatedStatuses) => {
-        this.setState((prevState) => ({
-            associationStatuses: {
-                ...prevState.associationStatuses,
-                ...updatedStatuses,
-            },
-        }));
-    }
+    updateTicketAssociations(sdk, eventId, masterTicketId, updatedStatuses);
+  };
 
-    _handleSave = () => {
-        let {
-            params: {eventId, masterTicketId},
-            initialAssociationStatuses,
-            updateTicketAssociations,
-        } = this.props;
-        let updatedStatuses = calculateChangesToSave(initialAssociationStatuses, this.state.associationStatuses);
+  _handleBack = () => {
+    this.props.setMasterTicketId(null);
+  };
 
-        updateTicketAssociations(eventId, masterTicketId, updatedStatuses);
-    }
+  render() {
+    let {
+      masterTicket = {},
+      filters,
+      updateFilters,
+      initialAssociationStatuses,
+      filteredEvents = [],
+    } = this.props;
+    let { associationStatuses } = this.state;
+    let isDirty = getIsDirty(initialAssociationStatuses, associationStatuses);
 
-    _handleBack = () => {
-        let {
-            navigateToLandingPage,
-            params: {eventId},
-        } = this.props;
+    let eventSelectionList = filteredEvents.map(event => (
+      <EventSelectionTicketGroup
+        key={event.id}
+        event={event}
+        associationStatuses={associationStatuses}
+        onChange={this._handleUpdateStatuses}
+      />
+    ));
 
-        navigateToLandingPage(eventId);
-    };
-
-    render() {
-        let {
-            masterTicket = {},
-            route,
-            filters,
-            updateFilters,
-            initialAssociationStatuses,
-            filteredEvents = [],
-        } = this.props;
-        let {associationStatuses} = this.state;
-        let isDirty = getIsDirty(initialAssociationStatuses, associationStatuses);
-
-        let eventSelectionList = filteredEvents.map((event) => (
-            <EventSelectionTicketGroup
-                key={event.id}
-                event={event}
-                associationStatuses={associationStatuses}
-                onChange={this._handleUpdateStatuses}
-            />
-        ));
-
-        return (
-            <div className="eds-g-grid">
-                <div className="eds-g-group">
-                    <div className="eds-g-cell">
-                        <h1 className="eds-text-hl">{masterTicket.name}</h1>
-                    </div>
-                    <ConfirmNavigationDialog
-                        route={route}
-                        onSave={this._handleSave}
-                        shouldConfirm={isDirty}
-                    />
-                    <TicketAssociationFilters filters={filters} updateFilters={updateFilters} />
-                    <Divider />
-                </div>
-                <div className="eds-g-group">
-                    {eventSelectionList}
-                </div>
-                <NavigationActionBar
-                    isSaveDisabled={!isDirty}
-                    onSave={this._handleSave}
-                    onBack={this._handleBack}
-                />
-            </div>
-        );
-    }
+    return (
+      <div className="eds-g-grid">
+        <div className="eds-g-group">
+          <div className="eds-g-cell">
+            <h1 className="eds-text-hl">{masterTicket.name}</h1>
+          </div>
+          <TicketAssociationFilters
+            filters={filters}
+            updateFilters={updateFilters}
+          />
+          <Divider />
+        </div>
+        <div className="eds-g-group">{eventSelectionList}</div>
+        <NavigationActionBar
+          isSaveDisabled={!isDirty}
+          onSave={this._handleSave}
+          onBack={this._handleBack}
+        />
+      </div>
+    );
+  }
 }
