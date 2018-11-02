@@ -78,7 +78,7 @@ const _getFilteredByEvents = (
   eventId
 ) =>
   Object.values(events).reduce((eventList, event) => {
-    if (event.id === eventId) {
+    if (+event.id === +eventId) {
       return eventList;
     }
 
