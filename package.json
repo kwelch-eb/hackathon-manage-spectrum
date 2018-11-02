@@ -11,11 +11,13 @@
     "query-string": "^6.2.0",
     "react": "15.4.2",
     "react-dom": "15.4.2",
+    "react-redux": "^5.1.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",
     "redux": "^4.0.1",
     "redux-devtools-extension": "^2.13.5",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "url-lib": "^2.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
