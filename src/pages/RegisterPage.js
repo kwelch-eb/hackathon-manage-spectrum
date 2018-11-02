@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import request from 'request';
-import querystring from 'querystring';
+import querystring from 'query-string';
 import { CLIENT_ID, CLIENT_SECRET, BASE_URL } from '../constants';
 
 export default class Register extends Component {

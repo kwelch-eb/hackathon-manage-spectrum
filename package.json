@@ -5,6 +5,7 @@
   "dependencies": {
     "eventbrite": "^1.0.2",
     "eventbrite_design_system": "http://packages.evbops.com:8889/package/eventbrite_design_system/66.13.0",
+    "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
     "query-string": "^6.2.0",
     "react": "15.4.2",
